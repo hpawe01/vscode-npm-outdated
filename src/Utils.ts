@@ -141,12 +141,13 @@ export const fetchLite = <T>(options: FetchLite): Promise<T | undefined> => {
         // istanbul ignore next
         response.on("error", () => resolve(undefined))
         response.on("end", () => {
+          const concatenatedResponse = Buffer.concat(responseBuffers)
           if (!response.headers["content-encoding"]) {
-            return resolve(JSON.parse(responseBuffers.toString()))
+            return resolve(JSON.parse(concatenatedResponse.toString()))
           }
 
           return zlib.gunzip(
-            Buffer.concat(responseBuffers),
+            concatenatedResponse,
             (_error, contents) => {
               resolve(JSON.parse(contents.toString()))
             }
