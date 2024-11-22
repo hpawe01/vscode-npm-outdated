@@ -163,8 +163,8 @@ export const vscodeSimulator = async (options: SimulatorOptions = {}) => {
           return Promise.resolve({
             versions: Object.fromEntries(
               options.packagesRepository[packageName].map((version) => [
-                version,
-                null,
+                version.replace('-deprecated', ''),
+                { version, deprecated: version.includes('-deprecated') ? '' : undefined },
               ]) as []
             ),
           })
