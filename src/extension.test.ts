@@ -264,7 +264,7 @@ describe("package diagnostics", () => {
       packageJson: { dependencies: { "npm-outdated": "^1.0.1-alpha" } },
       packagesInstalled: { "npm-outdated": "1.0.1-alpha" },
       packagesRepository: {
-        "npm-outdated": ["1.0.0", "1.0.1-alpha", "1.0.2-alpha"],
+        "npm-outdated": ["1.0.0", "1.0.1-alpha", "1.0.2-alpha", "1.0.3-deprecated"],
       },
     })
 

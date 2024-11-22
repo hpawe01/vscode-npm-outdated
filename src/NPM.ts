@@ -42,9 +42,10 @@ export const getPackageVersions = async (
       url: `https://registry.npmjs.org/${name}`,
     }).then((data) => {
       if (data?.versions) {
-        const versionsWithDeprecationInfo = Object.values(data.versions)
-          .map(versionInfo => versionInfo.deprecated ? `${versionInfo.version}-deprecated` : versionInfo.version)
-        return resolve(versionsWithDeprecationInfo)
+        const versionsWithoutDeprecated = Object.values(data.versions)
+          .filter(versionInfo => versionInfo.deprecated === undefined)
+          .map(versionInfo => versionInfo.version)
+        return resolve(versionsWithoutDeprecated)
       }
 
       // Uses `npm view` as a fallback.
