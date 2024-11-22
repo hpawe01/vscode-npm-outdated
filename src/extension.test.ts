@@ -381,6 +381,32 @@ describe("package diagnostics", () => {
     expect(decorations[0]).not.toContain("(attention: major update!)")
   })
 
+  it("valid dependency, latest is deprecated", async () => {
+    const { decorations, diagnostics } = await vscodeSimulator({
+      packageJson: { dependencies: { "npm-outdated": "^1.0.0" } },
+      packagesInstalled: { "npm-outdated": "1.0.1" },
+      packagesRepository: { "npm-outdated": ["1.0.0", "1.0.1", "1.0.2-deprecated"] },
+    })
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0]?.message).toContain("Newer version")
+    expect(diagnostics[0]?.message).toContain("1.0.1")
+    expect(decorations[0]).toContain("(already installed, just formalization)")
+  })
+
+  it("valid dependency, skip deprecated versions", async () => {
+    const { decorations, diagnostics } = await vscodeSimulator({
+      packageJson: { dependencies: { "npm-outdated": "^1.0.0" } },
+      packagesInstalled: { "npm-outdated": "1.0.1" },
+      packagesRepository: { "npm-outdated": ["1.0.0", "1.0.1", "1.0.2-deprecated", "1.0.3"] },
+    })
+
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0]?.message).toContain("Newer version")
+    expect(diagnostics[0]?.message).toContain("1.0.3")
+    expect(decorations[0]).toContain("Update available:")
+  })
+
   it("dependency name is invalid", async () => {
     const { decorations, diagnostics } = await vscodeSimulator({
       packageJson: { dependencies: { "invalid!": "^1.0.0" } },
