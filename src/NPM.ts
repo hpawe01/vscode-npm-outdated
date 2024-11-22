@@ -9,7 +9,12 @@ import { cacheEnabled, fetchLite } from "./Utils.js"
 type PackagesVersions = Map<string, Cache<Promise<string[] | null>>>
 
 interface NPMRegistryPackage {
-  versions?: Record<string, unknown>
+  versions?: Record<string, NPMRegistryPackageVersionInfo>
+}
+
+interface NPMRegistryPackageVersionInfo {
+  version: string
+  deprecated?: string
 }
 
 // The `npm view` cache.
@@ -37,7 +42,9 @@ export const getPackageVersions = async (
       url: `https://registry.npmjs.org/${name}`,
     }).then((data) => {
       if (data?.versions) {
-        return resolve(Object.keys(data.versions))
+        const versionsWithDeprecationInfo = Object.values(data.versions)
+          .map(versionInfo => versionInfo.deprecated ? `${versionInfo.version}-deprecated` : versionInfo.version)
+        return resolve(versionsWithDeprecationInfo)
       }
 
       // Uses `npm view` as a fallback.
